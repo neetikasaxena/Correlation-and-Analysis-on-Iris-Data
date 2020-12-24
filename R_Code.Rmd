@@ -1,0 +1,63 @@
+---
+title: "Correlation and Confusion Matrix on Iris Data"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+if(!require("pacman")) install.packages("pacman")
+pacman::p_load(tidyverse,data.table,reshape)
+search()
+```
+
+```{r}
+library(datasets)
+iris.dt <- as.data.table(iris)
+```
+
+**Correlation plot using the IRIS data. Which variables have the highest correlation coefficient?**
+```{r}
+corr <- round(cor(iris.dt[ , c(1:4)]),2)
+corr
+
+melted.corr <- melt(corr) 
+head(melted.corr)
+
+ggplot(melted.corr, aes(x = X1, y = X2, fill = value)) + 
+  scale_fill_gradient(low="wheat", high="orangered") +
+  geom_tile() + labs(x = NULL, y = NULL) +
+  geom_text(data = melted.corr, aes(x = X1, y = X2, label = value)) +
+  ggtitle("Which Variables Are Highly Correlated?")
+
+```
+
+|       Petal.Length and Petal.Width have the highest correlation with 0.96. Petal.Length and Petal.Width also have a high correlation with Sepal.Length having 0.87 and 0.82 correlation coefficients. 
+
+
+**Calculate average (mean) values of the numeric variables in the data using data.table package. Which variable has the highest mean?**
+```{r}
+
+avg <- iris.dt[, sapply(.SD, mean), .SDcols = 1:4]
+avg
+```
+|       Sepal.Length has the highest mean.
+
+**Scatterplot showing the relationship between Sepal.Length and Sepal.Width variable, using ggplot2 package. Color code the points using Species variable.**
+```{r}
+ggplot(data = iris.dt) + 
+  geom_point(mapping = aes(x = Sepal.Length, y = Sepal.Width, color = Species)) +
+  ggtitle("Sepal.Width vs. Sepal.Length ")
+```
+
+
+**Scatterplot showing the relationship between Petal.Length and Petal.Width variables, using ggplot2 package. Color code the points using Species variable.**
+```{r}
+ggplot(data = iris.dt) + 
+  geom_point(mapping = aes(x = Petal.Length, y = Petal.Width, color = Species)) +
+  ggtitle("Petal.Width vs. Petal.Length ")
+```
+**Combination of variables, creates better separation among records of different Species.**
+
+The plot comparing Petal.Length and Petal.Width create a greater separation among records. There is much less overlap betwwen species versicolor and virginica in this plot as cmpared to the plot of Sepal.Length vs Sepal.Width.
+
+
+
